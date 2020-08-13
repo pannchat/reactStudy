@@ -1,68 +1,105 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# JSX 규칙
 
-## Available Scripts
+1\. tag는 꼭 닫아야한다.
+- 태그 사이에 별다른 값이 없는 경우 self closing tag 사용 가능
+```html
+<Hello><Hello/>
+===
+<Hello />
+```
+2\. 2개 이상의 태그는 하나의 태그로 감싸져 있어야함.
+  - <></> 로 감싸는 방법도 존재함.
+```js
+  return (
+      <div>ㅎㅇ</div>
+      <div>ㅂㅇ</div>
+  );
+  //사용 불가.
+``` 
+```js
+return (
+    <div>
+        <div>ㅎㅇ</div>
+        <div>ㅂㅇ</div>
+    </div>
+);
+  ===
+return (
+    <>
+        <div>ㅎㅇ</div>
+        <div>ㅂㅇ</div>
+    </>
+);
+  ```
+  ---
+## JS값 출력
+JSX내부에서 javascript 값을 보여주고 싶을 때
+변수를 {}로 감싸고 출력하면 된다.
+```js
+function App() {
+  const name = 'jiwon';
+  return (
+    <>
+      <div>{name}</div>
+      <div>ㅂㅇ</div>
+    </>
+  );
+}
+```
+## 스타일 지정
+style을 지정해 주고 싶을 때
+기존 html 에서 style을 지정해주는 방식과는 다르게 객체를 만들어줘야한다.
 
-In the project directory, you can run:
+기존 css에서는 
+```css
+background-color : #fefefe;
+```
+이런 형태로 스타일을 지정했지만.
 
-### `npm start`
+JSX에서는 style명에 -로 구분된경우 camelCase를 사용한다.
+```js
+const style = {
+    backgroundColor : '#e3e3e3',
+    fontWeight: 'bold',
+    fontsize: '2em',
+    padding: '10px'
+};
+```
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## class 지정
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+기존 html에서는 
+```html
+<div class="myClass"></div>
+```
+형태로 클래스를 지정해줬지만
 
-### `npm test`
+JSX에서는 className 을 사용하여 클래스를 지정해준다.
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```css
+/* App.css */
+.myClass{
+  background-color:#42AB28
+}
+```
 
-### `npm run build`
+```js
+/* App.js */
+.
+. 기존 코드
+.
+import './App.css'; // App.css import
+.
+.
+  return (
+    <>
+      <div className="myClass">ㅂㅇ</div>
+    </>
+  );
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+  ## 주석
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+  ```js
+  // 한 줄 주석
+  /* 여러 줄 가능 */
+  ```

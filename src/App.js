@@ -1,12 +1,20 @@
 import React from 'react';
 import Hello from './Hello'; // .js 생략가능
+import './App.css'; // App.css import
 function App() {
+  const name = 'jiwon';
+  const style = {
+    backgroundColor : '#e3e3e3',
+    fontWeight: 'bold',
+    fontsize: '2em',
+    padding: '10px'
+  };
   return (
-    <div>
-      <Hello/>    
-      <Hello/>  //재사용 가능
-      <Hello/> 
-    </div>
+    <>
+      <Hello />
+      <div style={style}>{name}</div>
+      <div className="myClass">ㅂㅇ</div>
+    </>
   );
 }
 
