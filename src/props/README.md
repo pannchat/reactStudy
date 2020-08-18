@@ -45,6 +45,8 @@ function App() {
 으로 color 값을 추가해주고
 ```js
 /* App.js */
+.
+.
 function Hello(props){
     return <div style={{color:props.color}}>ㅎㅇ {props.name}</div>;
 }
