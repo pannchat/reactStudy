@@ -1,20 +1,15 @@
 import React from 'react';
 import Hello from './Hello'; // .js 생략가능
-import './App.css'; // App.css import
+import Wrapper from './Wrapper';
 function App() {
-  const name = 'jiwon';
-  const style = {
-    backgroundColor : '#e3e3e3',
-    fontWeight: 'bold',
-    fontsize: '2em',
-    padding: '10px'
-  };
+
   return (
-    <>
-      <Hello />
-      <div style={style}>{name}</div>
-      <div className="myClass">ㅂㅇ</div>
-    </>
+    
+    <Wrapper>
+      <Hello name="react" color="red"/>
+      <Hello color="pink" />
+    </Wrapper>
+    
   );
 }
 
