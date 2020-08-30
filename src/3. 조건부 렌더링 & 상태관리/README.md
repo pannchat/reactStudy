@@ -123,3 +123,55 @@ const onChange = (e) => {
 
 ```js
 /* InputTest.js */
+import React,{useState} from 'react';
+
+function InputTest(){
+    const [text,setText] = useState('');
+
+    const onChange = (e) => {
+        setText(e.target.value);
+    }
+
+    const onReset = (e) =>{
+        setText('');
+    }
+    return(
+        <div>
+            <input onChange={onChange} value={text}/>
+            <button onClick={onReset}>초기화</button>
+            <div>
+                <span>값 : </span>
+                <b>{text}</b>
+            </div>
+        </div>
+    );
+}
+
+export default InputTest;
+```
+
+이제 console.log가 아닌 input element의 값을 <b>{text}</b>로 나타내주기 위해
+useState Hook사용해서 
+```js
+const [text,setText] = useState('');
+```
+
+
+기본값은 빈 문자열로 주고
+```js
+    const onChange = (e) => {
+        setText(e.target.value);
+    }
+    const onReset = (e) =>{
+        setText('');
+    }
+```
+
+onChange, onReset 함수를 선언해준다.
+이 때
+
+```js
+<input onChange={onChange} value={text}/>
+```
+에서 value={text}를 추가해주지 않으면 reset버튼 클릭시 input의 value값이 초기화 되지않음.
+
