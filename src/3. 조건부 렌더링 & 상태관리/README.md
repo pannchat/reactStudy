@@ -48,16 +48,36 @@ src > Counter.js 생성
 /* Counter.js */
 import React, { useState } from 'react';
 
-f
+function Counter(){
+    const [count, setCount] = useState(0);
+    const upCount = () => {
+        setCount(count + 1);
+    };
+    const downCount = () => {
+        setCount(prevCount => prevCount-1);
+    }
+    return(
+        <div>
+            <p>count : {count}</p>
+            <button onClick={upCount}>up</button>
+            <button onClick={downCount}>down</button>
+        </div>
+    );
+}
+
+export default Counter;
 
 ```
 
+이 예제에서 useState가 Hook이다. Hook을 호출해 function component내부에 state(예제에서 count라는 상태변수를 선언했음)
 
+```js
+const [count, setCount] = useState(0);
+```
 
+useState는 현재의 state값과 이 값을 업데이트 하는 함수를 쌍으로 제공함. 
 
-
-
-
+[배열 구조 분해](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#%EB%B0%B0%EC%97%B4_%EA%B5%AC%EC%A1%B0_%EB%B6%84%ED%95%B4) 문법으로 useState로 호출된 state 변수들을 다른 변수명으로 할당할 수 있게해줌.
 
 
 
