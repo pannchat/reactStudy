@@ -641,6 +641,114 @@ function User({user, onRemove}){
 이렇게 정의해서 사용한다면 페이지가 렌더링되면서 바로 삭제함수가 실행될 것이다.
 
 이제, onRemove 함수를 구현하기 위해 App 컴포넌트를 열어준다.
-```
+onRemove를 구현할것인데 배열에서 특정 아이템을 삭제를할때는 불변성을 지키며 상태를 업데이트해야하는데 이때 filter라는 함수를 사용해준다.
+> filter함수는 배열에서 특정 조건을 만족하는 값들만 따로 추출하여 새로운 배열을 만든다.
+```js
 /* App.js */
+const onRemove = id =>{
+  setUsers(users.filter(user => user.id !== id));
+}
+```
+
+onRemove라는 id값을 파라미터로 가져와서 어떤 작업을 하는 함수를 만들어준다.
+setUsers를 users배열에 filter함수를 사용해서 user객체를 확인하는데 그중 user.id가 파라미터로 가져온것과 일치하지 않는것만 확인해주는것이다. 파라미터가 일치하면 false를 리턴하며 제외된다. 일치하지 않으면 새로운배열을 생성해서 추가해주는 것이다.
+
+여기까지 해서 실행해보면 잘 작동하는 모습을 볼 수 있다.
+
+# 배열에 항목 수정하기.
+계정명을 클릭했을 때 계정명의 색이 변하는 기능을 설정해보자.
+users라는 배열 내부에 active라는 값을 추가해준다.
+```js
+/* App.js */
+ const [users, setUsers] =useState([
+    {
+        id: 1,
+        username: 'jiwon',
+        email: 'pannchat@likelion.org',
+        active:true,
+    },
+    {
+        id: 2,
+        username: 'tom',
+        email: 'tom@tom.org',
+        active:false,
+    },
+    {
+        id: 3,
+        username: 'sam',
+        email: 'sam@sam.org',
+        active:false,
+    },
+]);
+
+```
+그리고 User컴포넌트에도 active를 추가해주고 b태그에 style을 추가 시켜준다.
+```js
+/* UserList.js */
+ const {username, email, id, active} = user;
+    return(
+        <div>
+        <b style={{
+            color: active ? 'green': 'black',
+            cursor:'pointer'
+        }}>{username}</b>
+        &nbsp;
+        <span>({email})</span>
+```
+color 속성에 삼항연산자를 사용해서 true인경우 green을 false인경우 black으로 설정해주고, cursor 속성으로 마우스 오버시에 커서가 pointer 되도록한다. &nbsp; 는 한 칸 띄워주는 코드이다.
+
+이제 클릭시 변화가 일어나게하는 함수를 구현한다
+```js
+/* App.js */
+const onToggle = id =>{
+  setUsers(user.map(
+    user => user.id === id
+    ? { ...user, active: !user.active}
+    :user
+  ));
+};
+```
+불변성을 지키며 배열을 update할 때에도 javascript 내장함수 map을 사용할 수 있다.
+배열에 있는 특정 item만 업데이트 할 때에도 map함수를 사용한다.
+id가 일치하면 업데이트하고 일치하지 않는다면 업데이트 x 하는 방식으로 구현한다.
+user 를 파라미터로 가져와서 user.id가 카라미터로 가져온 id값이랑 같다면?
+{...user } 불변성지키기위해 기존의 user배열 을가져와서 active 값을 !user.active 하면 호출때마다 active값이 반전된다.
+
+```js
+/* App.js */
+    <UserList users={users} onRemove={onRemove} onToggle={onToggle}/>
+```
+onToggle 전달하고 UserList에서도 onToggle을 받아오고 onClick을 통해 onToggle에 id를 전달한다.
+
+```js
+/* UserList.js */
+import React from 'react';
+
+function User({user, onRemove, onToggle}){
+    const {username, email, id, active} = user;
+    return(
+        <div>
+        <b style={{
+            color: active ? 'green': 'black',
+            cursor:'pointer'
+        }} onClick={() => onToggle(id)}>{username}</b>&nbsp;<span>({email})</span>
+        <button onClick={() => onRemove(id)}>삭제</button> 
+        </div>
+    )
+}
+function UserList({users, onRemove, onToggle}){
+    
+    
+    return(
+        <div>
+            {
+            users.map(
+                user => (<User user={user} key={user.id} onRemove={onRemove} onToggle={onToggle}/>) 
+            )
+            }
+        </div>
+    )
+}
+
+export default UserList;
 ```

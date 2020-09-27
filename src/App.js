@@ -19,17 +19,20 @@ function App() {
     {
         id: 1,
         username: 'jiwon',
-        email: 'pannchat@likelion.org'
+        email: 'pannchat@likelion.org',
+        active:true,
     },
     {
         id: 2,
         username: 'tom',
-        email: 'tom@tom.org'
+        email: 'tom@tom.org',
+        active:false,
     },
     {
         id: 3,
         username: 'sam',
-        email: 'sam@sam.org'
+        email: 'sam@sam.org',
+        active:false,
     },
 ]);
 
@@ -40,18 +43,31 @@ const onCreate = () => {
     username,
     email,
   };
+
   setUsers(users.concat(user));
   setInputs({
     username:'',
     email:'',
   });
+
   console.log(nextId.current);
   nextId.current += 1;
-}
+};
+
+const onRemove = (id) =>{
+  setUsers(users.filter(user => user.id !== id));
+};
+const onToggle = id =>{
+  setUsers(users.map(
+    user => user.id === id
+    ? { ...user, active: !user.active}
+    :user
+  ));
+};
   return (
     <>
     <CreateUser username={username} email={email} onChange={onChange} onCreate={onCreate}/>
-    <UserList users={users}/>
+    <UserList users={users} onRemove={onRemove} onToggle={onToggle}/>
     </>
   )
 }
