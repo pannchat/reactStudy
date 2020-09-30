@@ -1,16 +1,31 @@
-import React, { useState } from 'react';
+import React, { useReducer } from 'react';
 
 function Counter(){
-    const [count, setCount] = useState(0);
+    function reducer(state, action){
+        switch(action.type){
+            case 'INCREMENT':
+                return state + 1;
+            case 'DECREMENT':
+                return state - 1;
+            default:
+                throw new Error('Unhandled action');
+        }
+    }
+    const [number, dispatch] = useReducer(reducer, 0);
+
     const upCount = () => {
-        setCount(count + 1);
+        dispatch({
+            type: 'INCREMENT'
+        })
     };
     const downCount = () => {
-        setCount(prevCount => prevCount-1);
+        dispatch({
+            type: 'DECREMENT'
+        })
     }
     return(
         <div>
-            <p>count : {count}</p>
+            <p>count : {number}</p>
             <button onClick={upCount}>up</button>
             <button onClick={downCount}>down</button>
         </div>
