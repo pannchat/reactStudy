@@ -269,3 +269,92 @@ const nextArray = produce(array, draft => {
 })
 ```
 배열도 마찬가지로 produce로 불변성을 유지하면서 새로운 배열을 만들어 낼 수 있다.
+
+---
+
+# 리듀서 immer 로 구현하기.
+CREATE_USER, TOGGLE_USER, REMOVE_USER 액션들에 대해 immer를 사용해서 구현해 줄 것이다.
+immer를 사용한다고 해서 무조건 코드가 깔끔해지는 것은 아니다.
+```js
+.
+.
+// App.js
+  case 'CREATE_USER':
+      return produce(state, draft =>{
+        draft.users.push(action.user)
+      });
+      
+    case 'TOGGLE_USER':
+      return produce(state, draft =>{
+        const user = draft.users.find(user => user.id === action.id);
+        user.active = !user.active;
+      })
+      // return{
+      //   ...state,
+      //   users: state.users.map(user =>
+      //     user.id === action.id ?{...user,active: !user.active}
+      //     :user
+      //     )
+      // };
+    case 'REMOVE_USER':
+      return produce(state, draft => {
+        const index = draft.users.findIndex(user => user.id === action.id);
+        draft.users.splice(index, 1);
+      });
+      // return{
+      //   ...state,
+      //   users: state.users.filter(user => user.id !== action.id)
+      // }
+```
+기존에 구현했던 코드들을 지워주고, immer를 사용해서 구현해본다.
+state와 draft를 넣어주고 draft를  받아오는 함수에서는 draft.users에 action.user를 push해준다. 사실상 보면 immer를 안 쓴것이 더 깔끔해보인다.
+
+TOGGLE_USER에서도 마찬가지로 draft의 users find 로 해당 user들 중에서 user.id 가 action으로 가져온 id 와 같은 사용자 정보를 찾아서 , user가 지니고 있는 active 값을 반전 시켜준다.
+
+REMOVE_USER은 인덱스를 먼저 찾아준다 immer 에서는 splice라는 함수를 사용해서 배열에 있는 원소를 없앨 수 있는데, splice를 사용하려면 index값을 알고 있어야한다. findIndex를 사용해서 user.id 가 action.id 인것을 찾아서 splice를 통해 index부터 1개를 없애겠다고 정의한다.
+
+여기까지 코드를 실행해보면 모두 정상적으로 작동할 것이다.
+
+우리가 이전에 useState를 사용할 때 함수형 update를 사용 할 수 있다고 배웠다. 
+예를들어 setTodo에다가 다음 상태를 넣어주는 것이 아니라 어떻게 update할 것인지 정의하는 코드를 넣어줄 수 있었다. 그렇게 했을 때는 우리가 useCallback을 사용하게 될 때, 위에 선언된 todo 상태를 의존하고 있기 때문에 넣어줘야했지만 함수형 update를 사용할 때는 deps배열에 기존 todo를 넣어 줄 필요가 없다.
+만약 함수형 업데이트를 하는 경우에 immer를 사용하면 상황에 따라 더 편하게 업데이트해 줄 수 있다.
+
+```js
+const todo ={
+    text: 'hello',
+    done: false
+};
+
+const updater = produce(draft => {draft.done = !draft.done;
+});
+
+const nextTodo = updater(todo);
+
+console.log(nextTodo);
+```
+
+기존에 immer를 사용 할 때state와 draft를 파라미터로 사용했지만, state 없이 함수만 넣어주면 이 produce의 결과물은 updater 함수가 된다. 이 updater의 결과가 하나의 함수이기 때문에 만약 
+const nextTodo = updater(todo);
+를 실행하면 nextTodo의 값은 업데이트가 된다.
+
+
+```js
+const [todo, setTodo] = useState({
+    text: 'hello',
+    done: false
+});
+
+const onClick = useCallback(()=>
+    setTodo(
+        produce(draft =>{
+            draft.done = !draft.done;
+        })
+    );
+},[]);
+```
+그래서 produce에 파라미터를 함수 하나만 넣게되면 updater가 반환된다는 것이다.이것을 활용해서 결국 produce가 반환하는것이 updater함수가 되면, useState를 사용해서 만들어진 setTodo에다가 파라미터에 updater함수를 넣을 수 있게된다.
+이렇게하면 불변성을 유지하면서, 특정 업데이트를 할 수 있게된다.
+
+useState를 사용해서 까다로운 객체를 관리해야하는데, 불변성 관리하기가 까다로운 경우에 produce가 updater반환하는 특성을 사용해서 코드를 작성하면 편할 수 있다.
+
+immer performance를 보면 immer가 조금 느린것 처럼 보이지만, 실제로 사용자가 인지할 수 있는 정도의 차이는 아니고, 데이터의 양이 500k정도 됐을 때 저정도의 차이이므로 큰 걱정 없이 사용해도 된다.
