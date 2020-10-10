@@ -228,3 +228,194 @@ Prettier 에서 저장할 때 자동으로 코드를 정리해주는 기능처�
 자동으로 수정이 가능한 코드는 자동으로 수정이 가능하다.
 
 취향에 따라 설정하면 된다.
+
+---
+
+# ESLint 설정 커스텀
+
+package.json 에 있는 eslintConfig react-app을 통해서 react-app에 필요한 대부분의 규칙들이 적용 되어있다. 이것 처럼 다른 config package들이 있다 대표적으로 eslint-config-airbnb, eslint-config-google, eslint-config-standard 등 자주 사용되는 규칙들이 묶여진 상태로 라이브러리가 존재한다. 주로 react 프로젝트에서는 eslint-config-airbnb가 많이 사용된다.
+
+일단 이런 라이브러리를 리액트 프로젝트에 적용하기 위해서는 라이브러리를 설치해야 한다.
+
+`yarn add eslint-config-airbnb`
+로 설치를 하고
+
+```json
+"eslintConfig":{
+  "extends": ["react-app","airbnb"]
+},
+```
+
+이런식으로 하나 추가해주면 된다.
+이렇게 설정하면 기존 코드에서 여러 에러들이 발생하는데 몇가지는 무시해주는 작업들을 해 줄 것이다.
+그 전에
+`$ yarn add eslint-config-prettier`
+를 설치해 준다.
+
+설치해주고 prettier도 뒷 부분에다가 추가해주면 prettier에서 관리할 수 있는 것들은 eslint를 통해 관리하지 않겠다 하는 설정을 할 수 있다.
+만약 airbnb 나 다른 config 를 적용하게 되면 뒤에 prettier를 넣어주는 것이 중요하다. 그렇게 안하면 이것저것 eslint 설정을 바꿔줘야할 것이 많아짆다.
+
+이렇게 적용하고 코드를 열어보면 여러 에러가 발생하는데 이 중에서 no-unused-vars 라는 에러가 발생했다. 그런데 만약 본인이 이 부분에 대해서는 에러를 발생시키지 않고 싶다면, 이 no-unused-vars를
+
+```json
+"eslintConfig":{
+  "extends": ["react-app","airbnb","prettier"]
+},
+"rules": {
+  "no-unused-vars" : 1
+}
+```
+
+"rules" 를 추가해서 원하는 에러를 추가해 준다.
+해당 값을 1로 설정하면 기존에 에러로 발생하던 부분이 경고로 바뀌게 되고 0 으로 설정하게 되면 경고조차 사라지고 2로 설정하면 다시 빨간 줄이 나타나게 된다.
+
+no-console 을 0으로 설정해 주고 그리고 규칙중에 react/jsx-filename-extension 이라는 에러가 발생하는데 이것은 js파일에서 jsx를 사용하지 않는다는 규칙이다. 이 규칙을 꺼주기 위해서는 마찬가지로 rules에 해당 에러를 복사해서 0으로 주면 된다.(airbnb 를 통해서 설정된 규칙이다.)
+
+여기 까지 하면 불 필요한 규칙들이 사라진다.
+여기서 serviceWorker.js 를 열어보면 규칙들에 의해 많은 경고메세지와 에러들이 뜨는 것을 볼 수 있다.
+만약 해당 파일에 한해서 eslint 규칙들을 적용시키지 않고 싶다면
+해당 파일의 제일 윗부분에
+/_ eslint-disalbe _/ 이라는 주석을 넣으면 모두 비활성화 된다.
+
+앞으로 리액트 프로젝트를 개발하게 될 때에는 만약 airbnb 설정이 편하다면 적용해서 사용하면 되지만 초심자인 경우 이것저것 까다로운 규칙들이 많아서 불편할 수 있다.
+무조건 사용할 필요도 없다. 사용을 원치않으면 extends에서 지워주기만 하면 된다.
+
+# Snippet (코드 조각)
+
+이 기능은 대부분의 에디터마다 내장 되어있는 기능이다. 기본 용도는 자주 사용되는 코드에 대해 단축어를 만들어서 코드를 빠르게 작성할 수 있게 한다.
+예를들어 sample이라는 js파일을 만들고
+
+```js
+import React from "react";
+
+function Sample() {
+  return <div> Sample </div>;
+}
+
+export default Sample;
+```
+
+이것처럼 기본 틀 같은것을 만들 때마다 작업을 해주기가 귀찮을 수 있다 이런 경우에 Snippet을 쓰는 것인데. 예를 들어 단축키워드로 fc를 입력하면 위의 코드가 작성되는 것이다. 확장 프로그램에 React Snippet을 검색해서 설치한 뒤에 이미 정의 된 키워드를 사용하는 방법도 있지만. 직접 만들어서 사용하는 것을 추천한다.
+
+지금 부터는 직접 만들어서 사용하는 방법을 작성할 것이다.
+
+다시 Sample.js 로 돌아와서
+우리가 function 을 만들 때 계속 Sample이라는 이름의 function으로 코드를 작성하는 것이 아니기 때문에 파일 이름을 불러오는 \${TM_FILENAME_BASE} 를 사용해서 설정 해준다
+
+```js
+import React from 'react';
+
+function ${TM_FILENAME_BASE}(){
+  return <div> Sample </div>
+}
+
+export default ${TM_FILENAME_BASE};
+```
+
+이렇게 설정해 주고
+
+브라우저에서
+https://snippet-generator.app/
+을 접속해서 방금 우리가 작성한 코드를 붙여넣고
+Description 쪽에서는 코드조각의 설명을 집어넣고
+Tab trigger 에는 단축어를 넣는다.
+그다음 밑에 생성된 VSCODE 탭에 있는 코드를 복사한다.
+
+이제 다시 VSCODE 창으로 돌아와서 Sample.js 코드를 열어보면 VSCODE 창 하단에 Javascript 라는 탭이 있는데 이것을 Javascript React로 변경해줘야한다.
+Javascript로 표시된 곳을 클릭해보면 언어모드 선택 창이 활성화 되는데 여기에 Javascript를 검색해보면 Javascript React가 뜬다. 이것을 선택해준다.
+그렇게 하면 이 파일을 Js React 파일로 인식하게 된다. 만약 js파일을 열때마다 이렇게 인식시키고 싶다면 다시 Javascript React로 표시된 부분을 클릭해주고 .js에 대한 파일 연결 구성 혹은 Configure File Association for .js 를 눌러주고 다시 Javascript React를 클릭해 주면 된다.
+
+그 다음에는 code - Preferences - User Snippet을 눌러준다.
+
+그리고 그 창에서 javascriptreact.json을 선택한다.
+그럼 코드창이 하나 뜨는데.
+여기에 방금 복사했던 코드
+
+```json
+"Create Functional React Component": {
+  "prefix": "fc",
+  "body": [
+    "import React from 'react';",
+    "",
+    "function ${TM_FILENAME_BASE}(){",
+    "  return <div> Sample </div>",
+    "}",
+    "",
+    "export default ${TM_FILENAME_BASE};"
+  ],
+  "description": "Create Functional React Component"
+}
+```
+
+을 붙여넣기 해준다. 이제 부터는 단축어로 쉽게 코드 작성이 가능하다.
+Sample.js 내용을 모두 지워주고
+fc를 입력하면 바로 Sample 코드가 작성되는 것을 볼 수 있다.
+
+만약 해당 내용을 붙여넣었는데 잘 작동하지 않는다면
+
+```json
+{
+  "Create Functional React Component": {
+    "prefix": "fc",
+    "body": [
+      "import React from 'react';",
+      "",
+      "function ${TM_FILENAME_BASE}(){",
+      "  return <div> Sample </div>",
+      "}",
+      "",
+      "export default ${TM_FILENAME_BASE};"
+    ],
+    "description": "Create Functional React Component"
+  }
+}
+```
+
+위의 코드와 같이 복사했던 코드를 { } 중괄호로 한번 감싸준다.
+
+그리고 우리가 <div> 사이에 입력한 Sample 이라는 텍스트에 focus 가 되게 만들고 싶다면
+javascriptreact.json 파일에서
+
+```json
+// javascriptreact.json
+"<div> 사이에 ${1:원하는 텍스트} </div>"
+```
+
+으로 수정 작업을 거쳐주고 테스트 해본다.
+만약 어떤 텍스트 없이 커서만 포커싱 되게 하고 싶다고 하면
+
+```json
+// javascriptreact.json
+"<div> 사이에 ${1} </div>"
+```
+
+이렇게만 적용 시켜 주면 된다.
+
+```json
+//javascriptreact.json
+{
+  "Create Functional React Component": {
+    "prefix": "fc",
+    "body": [
+      "import React from 'react';",
+      "",
+      "function ${TM_FILENAME_BASE}(){",
+      "    return(",
+      "        <div>",
+      "            ${1}",
+      "        </div>",
+      "    );",
+      "}",
+      "",
+      "export default ${TM_FILENAME_BASE};"
+    ],
+    "description": "Create Functional React Component"
+  }
+}
+```
+
+나는 이런식으로 작성했다.
+
+만약에 컴포넌트 이름이 위치한 곳에 focus가 갔으면 좋겠다고 생각하면
+${1:${TM_FILENAME_BASE}} 이렇게 ${} 로 한번 더 감싸주면 된다.
+그리고 export 쪽에는 ${2:\${TM_FILENAME_BASE}} 로 감싸주면 탭을 누르면 바로 export 쪽으로 커서가 이동하게 된다.
