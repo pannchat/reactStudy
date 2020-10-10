@@ -27,6 +27,35 @@ function App() {
           button
         </Button>
       </div>
+      <div className="buttons">
+        <Button size="large" outline={true}>
+          button
+        </Button>
+        <Button color="gray" outline={true}>
+          button
+        </Button>
+        <Button size="small" color="pink" outline>
+          button
+        </Button>
+      </div>
+      <div className="buttons">
+        <Button size="large" fullWidth>
+          button
+        </Button>
+        <Button size="large" color="gray" fullWidth>
+          button
+        </Button>
+        <Button
+          size="large"
+          color="pink"
+          fullWidth
+          onClick={() => {
+            console.log("클릭");
+          }}
+        >
+          button
+        </Button>
+      </div>
     </div>
   );
 }
