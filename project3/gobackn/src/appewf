@@ -1,0 +1,123 @@
+import React from 'react';
+import Sender from './Sender';
+import Receiver from './Receiver';
+import './App.css';
+let senderQ = [];
+let receiverQ = [];
+let rcvpkt = [];
+let buf;
+let i;
+let sndPrev = -1;
+let seq, data;
+
+function event(stateP, seq, data) {
+  if (stateP === 'sndS') {
+    senderQ.push([seq, data]);
+    var result = Math.floor(Math.random() * 10) + 1;
+    if (result !== 1) {
+      rcv('', seq, data);
+      alert(senderQ + 'snd');
+    } else {
+      alert('전송실패');
+      event('sndS', seq, data);
+    }
+  }
+  if (stateP === 'rcvS') {
+    var rt = receiverQ.shift();
+    if (rt === undefined) return 'x';
+    else return rt;
+  }
+
+  if (stateP === 'sndR') {
+    receiverQ.push(senderQ.shift());
+    alert(receiverQ + 'rcv');
+    // return receiverQ;
+  }
+  return 'test';
+}
+function rcv(stateP, seq, data) {
+  return event('sndR', seq, data);
+}
+function App() {
+  (function snd() {
+    var pk = 6;
+    var packt = new Array(pk);
+    for (var i = 0; i < pk; i++) {
+      packt[i] = i;
+    }
+    console.log(packt);
+    let N = 3;
+    let base = 0;
+    let seqn = 0;
+    let runWindow = false;
+    let windows = [];
+    while (!runWindow || windows.length !== 0) {
+      if (base + N > seqn && !runWindow) {
+        var sndpkt = [];
+        sndpkt.push(seqn);
+        sndpkt.push(packt.shift());
+        console.log(sndpkt, packt.length);
+
+        event('sndS', sndpkt[0], sndpkt[1]);
+
+        // socket.emit('init', { seq: sndpkt[0], data: sndpkt[1] });
+        console.log('send packet seq N = ', seqn, 'windows', windows.length);
+        seqn++;
+        windows.push(sndpkt);
+        console.log(windows);
+        if (packt.length === 0) {
+          runWindow = true;
+          console.log('end');
+        }
+        console.log('send packet seq N = ', seqn, 'windows', windows.length);
+        // if (seqn === 10) runWindow = true;
+      }
+
+      let stateP = event('rcvS', '', '');
+
+      console.log('receive packet seq N = ', stateP);
+      if (stateP !== 'x') {
+        rcvpkt.push([stateP]);
+        alert(rcvpkt.length + 'RCVPKT' + rcvpkt);
+        buf = rcvpkt.shift();
+
+        while (buf[0][0] + 1 > base && windows.length !== 0) {
+          windows.shift();
+          base++;
+          console.log(base, 'windows:', windows, '-------');
+        }
+        console.log(
+          base,
+          '<-base',
+          rcvpkt.length,
+          '<- rcv lenght\n',
+          windows.length,
+          '<- windowlength',
+          seqn,
+          '<--seq',
+        );
+        seq = seqn = '';
+      }
+    }
+  })();
+  // const seq = 'test';
+  // const data = 'test';
+  return (
+    <div>
+      <div>
+        <h1>sender</h1>
+        <Sender seq={seq} data={data}>
+          {seq} , {data}
+        </Sender>
+      </div>
+      <div>
+        <h1>receiver</h1>
+        <Receiver seq={seq} data={data}>
+          {seq},{data}
+        </Receiver>
+      </div>
+    </div>
+  );
+}
+
+export default App;

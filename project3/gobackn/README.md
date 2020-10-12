@@ -1,68 +1,107 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+해당 프로젝트는 REACT로 진행하였습니다.
+yarn 설치 https://classic.yarnpkg.com/en/docs/install#mac-stable
 
-## Available Scripts
+해당 프로그램을 실행하기 위해서는 yarn이 필요합니다.
 
-In the project directory, you can run:
+프로젝트 최상단 .yarn.lock 이 있는 디렉터리에서
+terminal에
 
-### `yarn start`
+```
+$ yarn start
+```
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+로 실행 시킬 수 있습니다.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+모든 데이터는 console창에 출력됩니다.
 
-### `yarn test`
+하지만 리액트 설치가 안되어도
+아래의 코드만으로 확인 가능합니다.
+ideone 같은 컴파일러 환경에서는 1000개의 데이터가 모두 출력되지 않는 현상이 있는것을 확인하였습니다.
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```js
+let receiverQ = [];
+let rcvpkt = [];
+let i, j;
+let seq, data;
+let rcvV = 1;
+function channel(who, seq, data) {
+  if (who === 'sender') {
+    if (Math.random() < 0.1) {
+      console.log('send error' + seq + 'and' + data);
+    } else {
+      rcv(seq, data);
+    }
+  } else if (who === 'resender') {
+    console.log([seq] + '재전송 됨');
+    rcv(seq, data);
+  }
+}
+function rcv(seq, data) {
+  console.log([seq, data] + '전송받음. ACK발송');
+  if (seq === rcvV) {
+    receiverQ.push([seq, data]);
+    rcvV++;
+  }
+}
 
-### `yarn build`
+(function snd() {
+  var pk = 1000;
+  var packt = new Array(pk);
+  for (var i = 0; i < pk; i++) {
+    packt[i] = i;
+  }
+  // console.log(packt);
+  let N = 10;
+  let base = 1;
+  let seqn = 1;
+  let runWindow = false;
+  let windows = [];
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+  while (!runWindow || windows.length !== 0) {
+    while (base + N > seqn && !runWindow) {
+      var sndpkt = [];
+      sndpkt.push(seqn);
+      sndpkt.push(packt.shift());
+      console.log(sndpkt, packt.length);
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+      windows.push(sndpkt); //[1~]
+      channel('sender', sndpkt[0], sndpkt[1]);
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+      // socket.emit('init', { seq: sndpkt[0], data: sndpkt[1] });
+      console.log('send packet seq N = ', seqn, 'windows', windows);
+      seqn++;
+      console.log(windows);
+      if (packt.length === 0) {
+        runWindow = true;
+        console.log('end');
+        break;
+      }
 
-### `yarn eject`
+      // if (seqn === 10) runWindow = true;
+    }
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+    try {
+      console.log('ACK' + receiverQ[0][0] + '수신');
+      if (receiverQ[0][0] == windows[0][0]) {
+        //같으면
+        if (receiverQ[0][0] === 1000) {
+          console.log('프로그램 종료');
+          break;
+        }
+        receiverQ.shift();
+        windows.shift();
+        base++;
+        console.log('base 증가>> ' + base);
+      }
+    } catch {
+      receiverQ = [];
+      for (i in windows) {
+        console.log(windows[i] + ' 패킷에 대하여 재전송');
+        // alert("retransmit seq:"+windows[i][0])
+        channel('resender', windows[i][0], windows[i][1]);
+        // receiverQ.push(windows[i]);
+      }
+    }
+  }
+})();
+```
