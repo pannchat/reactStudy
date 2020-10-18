@@ -1,0 +1,1 @@
+{"version":3,"sources":["main.scss"],"names":[],"mappings":"AAAA,AAEE,UAFQ,CAER,KAAK,CAAC;EACJ,KAAK,EAAE,KAAS;EAChB,MAAM,EAHD,KAAK;EAIV,gBAAgB,EAAE,MAAM,GACzB","file":"main.39afc03c.css","sourceRoot":"..","sourcesContent":[".container {\n  $size: 100px;\n  .item {\n    width: $size * 3;\n    height: $size;\n    background-color: tomato;\n  }\n}\n"]}
