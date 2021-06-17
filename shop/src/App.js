@@ -5,9 +5,11 @@ import Data from './data'
 import Product from './Product'
 import {Navbar, Container, Nav, NavDropdown} from 'react-bootstrap';
 import {Route, Switch, Link} from 'react-router-dom';
-import Detail from './Detail'
+import Detail from './Detail';
+import axios from 'axios';
 function App() {
   let [shoes, setShoes] = useState(Data);
+  let [stock, setStock] = useState([10,11,12]);
   return (
     <div className="App">
       <Navbar bg="light" expand="lg">
@@ -16,8 +18,8 @@ function App() {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link><Link to="/">Home</Link></Nav.Link>
-              <Nav.Link><Link to="/detail">Detail</Link></Nav.Link>
+              <Nav.Link as={Link} to="/">Home</Nav.Link>
+              <Nav.Link as={Link} to="/detail">Detail</Nav.Link>
               <NavDropdown title="Dropdown" id="basic-nav-dropdown">
                 <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
                 <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
@@ -44,17 +46,30 @@ function App() {
           {
             shoes.map((i,idx)=>{
               return(
-              <Product shoes={shoes[idx]} idx={idx}/>
+              <Product shoes={shoes[idx]} idx={idx} key={idx}/>
               )
             })
           }
-          
 
         </div>
+        <button onClick={ () => {
+
+          axios.get('https://codingapple1.github.io/shop/data2.json')
+          .then((res)=>{
+            setShoes([
+              ...shoes,
+              ...res.data
+            ])
+            console.log(shoes)
+          })
+          .catch(()=>{
+            console.log("실패했음")
+          })
+        } } className="btn btn-primary">더보기</button>
       </div>
     </Route>
     <Route path="/detail/:id">
-          <Detail shoes={shoes} />
+          <Detail shoes={shoes} stock={stock} setStock={setStock}/>
 
     </Route>
     <Route path="/:id">
