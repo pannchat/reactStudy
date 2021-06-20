@@ -1,12 +1,15 @@
 import logo from './logo.svg';
 import './App.css';
-import React,{useState} from 'react';
+import React,{useState, useContext} from 'react';
 import Data from './data'
 import Product from './Product'
 import {Navbar, Container, Nav, NavDropdown} from 'react-bootstrap';
 import {Route, Switch, Link} from 'react-router-dom';
 import Detail from './Detail';
 import axios from 'axios';
+
+export let stockContext = React.createContext();
+
 function App() {
   let [shoes, setShoes] = useState(Data);
   let [stock, setStock] = useState([10,11,12]);
@@ -40,6 +43,7 @@ function App() {
         <button class="btn">확인</button>
       </div>
       <div className="container">
+        <stockContext.Provider value={stock}>
         <div className="row">
 
 
@@ -52,6 +56,7 @@ function App() {
           }
 
         </div>
+        </stockContext.Provider>
         <button onClick={ () => {
 
           axios.get('https://codingapple1.github.io/shop/data2.json')
@@ -77,8 +82,8 @@ function App() {
     </Route>
     </Switch>
     </div>
+    
   );
 }
-
 
 export default App;

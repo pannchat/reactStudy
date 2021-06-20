@@ -1,8 +1,9 @@
 import React,{useState, useEffect} from 'react';
 import {useHistory, useParams} from 'react-router-dom';
 import styled from 'styled-components';
+import {Navbar, Container, Nav, NavDropdown} from 'react-bootstrap';
 import './Detail.scss';
-
+import {CSSTransition} from "react-transition-group"
 let box = styled.div`
     padding : 20px;
 
@@ -25,6 +26,9 @@ function Detail(props){
     let fid = props.shoes.find((Product)=>{
         return Product.id == id
     })
+    let [Tab, setTab] = useState(0);
+    let [Switch, setSwitch] = useState(false);
+
     const [myAlert,setMyAlert] = useState(MyAlert);
     useEffect(()=>{
         setTimeout(()=>{
@@ -51,10 +55,35 @@ function Detail(props){
           }}>뒤로가기</button> 
         </div>
       </div>
+        <Nav className="mt-5" variant="tabs" defaultActiveKey="link-0">
+        <Nav.Item>
+            <Nav.Link eventKey="link-0" onClick={()=>{ setSwitch(false); setTab(0)}}>Active</Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+            <Nav.Link eventKey="link-1" onClick={()=>{setSwitch(false); setTab(1)}}>Option 2</Nav.Link>
+        </Nav.Item>
+        </Nav>
+        <CSSTransition in={Switch} classNames="wow" timeout={500}>
+
+            <TabContent Tab={Tab} setSwitch={setSwitch}/>
+        </CSSTransition>
   </div> 
     )
   }
-
+function TabContent(props){
+    useEffect(()=>{
+        props.setSwitch(true)
+    })
+    if (props.Tab===0){
+        return (<div>1</div>)
+    }else if(props.Tab === 1){
+        return (<div>2</div>)
+    }else if(props.Tab === 2){
+        return (<div>3</div>)
+    }
+    
+    
+}
   function StockInfo(props){
       return (
           <p>재고 : {props.stock[0]} </p>
