@@ -4,10 +4,17 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {BrowserRouter} from 'react-router-dom'
+import {Provider} from 'react-redux'
+import { createStore } from 'redux';
+let store = createStore(()=>{
+  return [{id:0 , name: '멋진 신발', 'quan' : 2 },{id:1 , name: '별로 안 예쁜신발', 'quan' : 6 },{id:2 , name: '그냥 신발', 'quan' : 3 }]
+})
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
+    <Provider store={store}>
       <App />
+    </Provider>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')

@@ -7,7 +7,7 @@ import {Navbar, Container, Nav, NavDropdown} from 'react-bootstrap';
 import {Route, Switch, Link} from 'react-router-dom';
 import Detail from './Detail';
 import axios from 'axios';
-
+import Cart from './Cart.js'
 export let stockContext = React.createContext();
 
 function App() {
@@ -77,9 +77,13 @@ function App() {
           <Detail shoes={shoes} stock={stock} setStock={setStock}/>
 
     </Route>
+    <Route path="/cart">
+      <Cart/>
+    </Route>
     <Route path="/:id">
       <div>아무내용</div>
     </Route>
+
     </Switch>
     </div>
     
