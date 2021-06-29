@@ -21,6 +21,7 @@ function Cart(props){
                                 <td>{products.id}</td>
                                 <td> {products.name} </td>
                                 <td> {products.quan} </td>
+                                <td><button onClick={ ()=>{props.dispatch({ type:'INCREMENT' })} }>+</button><button onClick={ ()=>{props.dispatch({ type:'DECREMENT' })} }>-</button></td>
                                 </tr>
                             )
                         })
