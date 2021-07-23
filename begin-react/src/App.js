@@ -110,9 +110,10 @@ function App() {
 
   return (
     <>  
-        <CreateUser username={username} email={email} onChange={onChange} onCreate={onCreate}/>
+        {/* <CreateUser username={username} email={email} onChange={onChange} onCreate={onCreate}/>
         <UserList users={users} onToggle={onToggle} onRemove={onRemove}  />
-        <div>활성 사용자 수: {count}</div>
+        <div>활성 사용자 수: {count}</div> */}
+        <InputSample></InputSample>
     </>
   );
 }
