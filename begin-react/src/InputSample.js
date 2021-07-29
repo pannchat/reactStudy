@@ -2,9 +2,14 @@ import React, { useState, useRef } from 'react';
 
 function InputSample(){
     const [inputs, setInputs] = useState({
-        name:'',
-        nickname :'', 
-    });
+        tankWidth: '',
+        tankHeight: '',
+        tankDepth: '',
+        tankSand: '',
+        waterLevel: '',
+        tankWeight: '',
+        capacity: '내 수조의 용량을 계산해보세요.',
+    })
     const {name, nickname} = inputs;
     const nameInput = useRef();
     const onChange = (e) => {
@@ -13,6 +18,7 @@ function InputSample(){
             ...inputs,
             [name]: value
         })
+        console.log(inputs)
     }
     const onReset = () =>{
         setInputs({
@@ -21,9 +27,10 @@ function InputSample(){
         })
         nameInput.current.focus();
     }
+    const { tankWidth, tankDepth, tankHeight } = inputs;
     return (
         <>
-        <input name="name" onChange={onChange} value={name} ref={nameInput}/>
+        <input name="tankWidth" onChange={onChange} value={tankWidth}/>
         <input name="nickname" onChange={onChange} value={nickname}/>
         <button onClick={onReset}>초기화</button>
         <p>{name}:({nickname})</p>
