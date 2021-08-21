@@ -1,41 +1,40 @@
-import React from "react";
-import ReactDOM from "react-dom";
-class ImageGallery extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { links: props.links };
-    this.remove = this.remove.bind(this);
+import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
+const CommentList = (props) => {
+    const [text,setText] = React.useState('');
+    const [li, setLi] = React.useState([]);
+    const onChange = (e) =>{
+        setText(e.target.value);
+    }
+    const onClick = () =>{
+        if(text!==''){
+            setLi([...li, text]);
+            setText('');
+        }
+    }
+    console.log(text);
+    return (<div>
+        <form>
+          <input type="text" value={text} onChange={onChange}/>
+          <input type="button" value="Post" onClick={onClick} />
+        </form>
+        <ul>
+            {li.map( (content,key) => (
+                <li key={key}>{content}</li>
+            ))}
+        </ul>
+      </div>);
   }
-  remove = (url) => {
-    this.setState((state) => ({
-      links: state.links.filter((l) => l !== url)
-    }));
-  };
-  render() {
-    const links = this.state.links;
-
-    return (
-      <div>
-        {links.map((link, key) => (
-          <div key={key}>
-            <div className="image">
-              <img src={link} />
-
-              <button className="remove" onClick={() => this.remove(link)}>
-                X
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  }
-}
-
-document.body.innerHTML = "<div id='root'> </div>";
-
-const rootElement = document.getElementById("root");
-const links = ["https://bit.ly/3lmYVna", "https://bit.ly/3flyaMj"];
-ReactDOM.render(<ImageGallery links={links} />, rootElement);
-document.querySelectorAll(".remove")[0].click();
-console.log(rootElement.innerHTML);
+  
+  document.body.innerHTML = "<div id='root'> </div>";
+    
+  const rootElement = document.getElementById("root");
+  ReactDOM.render(<CommentList />, rootElement);
+                  
+  var input = document.querySelector("input[type='text']");
+  input.value = "test";
+  input._valueTracker.setValue("");
+  input.dispatchEvent(new Event('change', { bubbles: true }));
+  
+  document.querySelector("input[type='button']").click();
+  console.log(document.getElementsByTagName("ul")[0].innerHTML);
