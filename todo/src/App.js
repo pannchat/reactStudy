@@ -5,13 +5,14 @@ import TodoHead from './components/TodoHead';
 import TodoList from './components/TodoList';
 import TodoItem from './components/TodoItem';
 import TodoCreate from './components/TodoCreate';
+import { TodoProvider } from './TodoContext';
 const GlobalStyle = createGlobalStyle`
 body{
     background:#e9ecef;
 }`;
 const App = () => {
     return (
-        <>
+        <TodoProvider>
             <GlobalStyle/>
             <TodoTemplate>
                 <TodoHead/>
@@ -19,7 +20,7 @@ const App = () => {
                 <TodoCreate/>
             </TodoTemplate>
             
-        </>
+        </TodoProvider>
     );
 }
 
