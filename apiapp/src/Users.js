@@ -1,70 +1,31 @@
 import axios from 'axios';
 import React,{useState, useEffect} from 'react';
 import { useReducer } from 'react/cjs/react.development';
+import useAsync from './useAsync';
+import User from './User'
 
-
-function reducer(state,action){
-    switch(action.type){
-        case 'LOADING':
-            return{
-                loading: true,
-                data:null,
-                error:null,
-            }
-        case 'SUCCESS':
-            return{
-                loading:false,
-                data:action.data,
-                error:null,
-            }
-        case 'ERROR':
-            return {
-                loading:false,
-                data:null,
-                error:action.error,
-            }
-        default:
-            throw new Error('unhandled'+action.type)
-    }
+async function getUsers(){
+    const res = await axios.get('https://jsonplaceholder.typicode.com/users/');
+    return res.data;
 }
 const Users = () => {
-    const [state, dispatch] = useReducer(reducer,{
-        loading:false,
-        data:null,
-        error:null,
-        
-    })
-    const fetchUsers = async () =>{
-        try{
-            dispatch({type:'LOADING'});
-            const res = await axios.get('https://jsonplaceholder.typicode.com/users/');
-            console.log(res.data)
-            dispatch({type:'SUCCESS', data:res.data})
-            console.log(users)
-
-        }catch(e){
-            dispatch({type:'ERROR',error:e})
-        }
-    }
-
-    useEffect(()=>{
-
-    fetchUsers();
-    },[]);      
+    const [state,refetch] = useAsync(getUsers,[],true);
+    const [userId, setUserId] = useState(null);
     const {loading,data:users,error} = state;
     if (loading) return <div>로딩</div>
     if(error) return <div>에러가 발생했음</div>
-    if(!users) return null;
+    if(!users) return <button onClick={refetch}>로딩</button>;
     return(
         <>
         <ul>
             {users.map(user=>(
-                <li key={user.id}>
+                <li key={user.id} onClick={()=>setUserId(user.id)}>
                     {user.username} ({user.email});
                 </li>
             ))}
         </ul>
-        <button onClick={fetchUsers}>다시불러오기</button>
+        <button onClick={refetch}>다시불러오기</button>
+        {userId && <User id={userId}/>}
         </>
     )
 }
